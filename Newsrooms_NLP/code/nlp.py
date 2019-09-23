@@ -45,7 +45,7 @@ def process_document(text):
 
 def load_labels(data_dir):
 	"""
-	Returns a hashmap key: unique id, val: title
+	Returns a dictionary = {unique_label: [titles]}
 	"""
 	conn = sqlite3.connect('articles_db.db')
 	cur = conn.cursor()
@@ -78,10 +78,18 @@ def cluster_documents():
 
 
 
-# def main(data_dir):
-# 	corpus = load_articles(data_dir) # list of tuples [title, article]
-# 	labels = load_labels(data_dir) # hashmap of key: unique doc id, val: title
-#     return [corpus, labels]
+def load_all(data_dir):
+    """Given a string of the data directory, return a tuple:
+    (
+    'corpus' -> [(title1, article1), (title2, article2), ...],
+    'labels' -> {unique_label: [titles]}
+    )
+    Typical usage:
+    corpus, labels = load_all(data_dir)
+    """
+    corpus = load_articles(data_dir)
+    labels = load_labels(data_dir)
+    return (corpus, labels)
 
 
 # Run using 'python nlp.py' or 'python nlp.py <PATH_TO_BBC_DIRECTORY>'
