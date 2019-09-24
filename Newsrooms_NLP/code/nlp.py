@@ -2,16 +2,15 @@ import os
 import sqlite3
 import nltk
 
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.decomposition import NMF, LatentDirichletAllocation
+
 # Downloads the NLTK stopword corpus if not already downloaded
 try:
 	nltk.download('stopwords')
 except Exception as e:
 	print(e)
     #nltk.data.fine('corpora/stopwords')
-
-# from nltk.corpus import stopwords
-# from nltk.stem import SnowballStemmer
-# from nltk.tokenize import RegexpTokenizer
 
 
 def process_document(text):
@@ -43,6 +42,7 @@ def process_document(text):
 	# Return list of processed words
 	return stemmed
 
+
 def load_labels(data_dir):
 	"""
 	Returns a dictionary = {unique_label: [titles]}
@@ -57,6 +57,7 @@ def load_labels(data_dir):
 			categories[i] = [tup[0] for tup in data]
 	return categories
 
+
 def load_articles(data_dir):
 	"""
 	"""
@@ -68,7 +69,6 @@ def load_articles(data_dir):
 	return data
 
 
-
 def classify_documents(topics, labels):
 	pass
 
@@ -77,12 +77,11 @@ def cluster_documents():
 	pass
 
 
-
 def load_all(data_dir):
     """Given a string of the data directory, return a tuple:
     (
-    'corpus' -> [(title1, article1), (title2, article2), ...],
-    'labels' -> {unique_label: [titles]}
+    'corpus', #-> [(title1, article1), (title2, article2), ...]
+    'labels'  #-> {unique_label: [titles]}
     )
     Typical usage:
     corpus, labels = load_all(data_dir)
@@ -92,10 +91,24 @@ def load_all(data_dir):
     return (corpus, labels)
 
 
+def print_top_words(model, feature_names, n_top_words):
+    """Print the most important words that distinguish each Topic from the rest.
+    """
+    print('Topics in:')
+    print(str(model))
+    for topic_idx, topic in enumerate(model.components_):
+        message = f"----------  Topic #{topic_idx}:  ----------\n" 
+        message += " ".join(
+            [feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]
+        )
+        print(message)
+    print()
+
+
 # Run using 'python nlp.py' or 'python nlp.py <PATH_TO_BBC_DIRECTORY>'
 # to manually specify the path to the data.
 # This may take a little bit of time (~30-60 seconds) to run.
 if __name__ == '__main__':
 	# data_dir = '/course/cs1951a/pub/nlp/bbc/data' if len(sys.argv) == 1 else sys.argv[1]
 	data_dir = os.path.join(os.getcwd(), 'articles_db.db')
-	main(data_dir)
+	load_all(data_dir)
